@@ -1,0 +1,9 @@
+.bashrc
+.cache
+.config
+.ipython
+.jupyter
+.local
+.profile
+__pycache__
+.ipynb_checkpoints
