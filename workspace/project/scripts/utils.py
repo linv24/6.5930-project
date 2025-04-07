@@ -1,5 +1,3 @@
-### Copied from lab-5 ###
-
 import shutil
 import time
 from typing import Callable, Union, Iterable, List
