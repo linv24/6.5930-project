@@ -1,0 +1,19 @@
+{{include_text('defines.yaml')}}
+
+architecture:
+  nodes: &macro # top macro
+
+  - !Container # macro
+    name: macro
+    attributes: {has_power_gating: True}
+
+  - !Container # blk (block)
+    name: blk
+    parent: macro
+    spatial: {meshX: BLK_X}
+
+  - !Component # sblk (sub-block)
+    name: sblk
+    parent: blk
+    subclass: flexdcim_sblk
+    spatial: {meshX: SBLK_X, meshY: SBLK_Y}

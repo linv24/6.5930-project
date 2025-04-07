@@ -1,0 +1,59 @@
+{{include_text('defines.yaml')}}
+
+compound_components:
+  version: 0.4
+  classes:
+
+  # -------------------------------------------------------------------------
+  - name: digital_sense_amp
+
+  # -------------------------------------------------------------------------
+  - name: flexdcim_dpu
+    attributes:
+      width: 8
+      precision: 8
+      voltage_energy_scale: TODO
+      leakage_energy_scale: TODO
+      switching_activity: TODO
+    subcomponents:
+    - name: bitcell
+      class: sram_bitcell
+      spatial: {meshX: 8}
+      attributes:
+        n_bits: 1
+        voltage: TODO
+        area_scale: TODO
+    - name: mac_logic
+      class: intadder
+      attributes:
+        n_bits: 16
+        voltage: TODO
+        area_scale: TODO
+    actions:
+    - name: read
+      subcomponents:
+      - {name: bitcell, actions: [{name: read, energy_scale: TODO}]}
+      - {name: mac_logic, actions: [{name: read, energy_scale: TODO}]}
+    - name: leak
+      subcomponents:
+      - {name: bitcell, actions: [{name: leak, energy_scale: TODO}]}
+      - {name: mac_logic, actions: [{name: leak, energy_scale: TODO}]}
+    - {name: write, subcomponents: []}
+    - {name: update, subcomponents: []}
+
+# -------------------------------------------------------------------------
+
+  - name: flexdcim_accum_buffer
+    attributes: TODO
+
+# -------------------------------------------------------------------------
+
+  - name: flexdcim_sblk
+    attributes:
+      width: ARRAY_COLS
+    subcomponents:
+    - {name: row_drivers, class: compound, subclass: input_row_drivers}
+    - {name: sense_amp, class: compound, subclass: digital_sense_amp}
+    - {name: dpu, class: compound, subclass: flexdcim_dpu, spatial: {meshX: 8}}
+    - {name: accum, class: compound, subclass: flexdcim_accum_buffer, spatial: {meshX: 8}}
+    actions: TODO

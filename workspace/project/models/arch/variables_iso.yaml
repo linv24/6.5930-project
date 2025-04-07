@@ -1,0 +1,20 @@
+# These variables pertain to the workload, microarch, and circuits. They should
+# be matched between architectures when comparing for a fair comparison.
+# Furthermore, this file should follow the same format for all architectures
+# such that we can mix and match architectures with different iso files.
+variables:
+  version: 0.4
+  # ===========================================================================
+  # Workload, microarch, circuits. Things that should be matched
+  # between architectures when comparing.
+  # ===========================================================================
+
+
+  # uncategorized -------------------------------------------------------------
+  ARRAY_ROWS: TODO
+  ARRAY_COLS: TODO
+  SBLK_X: TODO
+  SBLK_Y: TODO
+  BLK_X: TODO
+  DPU_X: 8
+  INPUT_WIDTH: 8
