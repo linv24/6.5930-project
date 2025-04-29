@@ -1,0 +1,61 @@
+variables:
+  version: 0.4
+  CIM_ARCHITECTURE: True
+
+  # ===========================================================================
+  # Set by CiM Processor
+  # ===========================================================================
+
+  ARRAY_WORDLINES:        512                                     # rows in the array (inputs)
+  ARRAY_BITLINES:         128                                     # columns in the array (weights)
+  ARRAY_PARALLEL_INPUTS:  64                                      # input activations (1-64 flexible)
+  ARRAY_PARALLEL_OUTPUTS: 16                                      # 16 outputs produced in parallel
+  ARRAY_PARALLEL_WEIGHTS: 65536                                   # total weight storage
+
+  # ===========================================================================
+  # Encoding-dependent parameters
+  # ===========================================================================
+
+  ENCODED_INPUT_BITS:  INPUT_BITS
+  ENCODED_WEIGHT_BITS: WEIGHT_BITS
+  ENCODED_OUTPUT_BITS: OUTPUT_BITS
+  INPUT_ENCODING_FUNC: offset_encode_hist
+  WEIGHT_ENCODING_FUNC: offset_encode_hist
+  SIGNED_SUM_ACROSS_INPUTS: True
+  SIGNED_SUM_ACROSS_WEIGHTS: True
+
+  # ===========================================================================
+  # Architecture & CiM Array Structure
+  # ===========================================================================
+
+  CIM_UNIT_WIDTH_CELLS:  8                                        # 8×1 DPUs with 8 bits per weight (CHANGE THIS FOR DESIGN SPACE EXPLORATION ALONG W ADDERS AND ACCUM)
+  CIM_UNIT_DEPTH_CELLS:  1                                        # single row
+  BITS_PER_CELL:         1                                        # each cell stores 1 bit
+
+  # ===========================================================================
+  # Data Converters
+  # ===========================================================================
+
+  ADC_RESOLUTION: 1                                               # FlexDCiM requires no ADC/DAC
+  DAC_RESOLUTION: 1                                               # FlexDCiM requires no ADC/DAC
+
+  # ===========================================================================
+  # Hardware
+  # ===========================================================================
+
+  TECHNOLOGY: 65                                        # paper specifies a 65nm process
+  CLOCK_FREQUENCY: 400e6                                # 400 MHz clock
+  VOLTAGE: 1                                            # figure 20 mentions a 1V supply
+  VOLTAGE_ENERGY_SCALE: (VOLTAGE) ** 2                  # energy consumption can be approximated as scaling quadratically with Voltage (MAY BE WORTH UPDATING FOR CALIBRATION)
+  CELL_CONFIG: "{{find_path(cell_override|default('sram_wang_vlsi_2022.cell.yaml'))}}"
+  VOLTAGE_LATENCY_SCALE: 1 / VOLTAGE                    # latency scales inversely with Voltage (approx)
+  BASE_LATENCY: 2.5e-9                                            # 2.5ns per cycle (400 MHz)
+  GLOBAL_CYCLE_SECONDS: BASE_LATENCY * VOLTAGE_LATENCY_SCALE
+  READ_PULSE_WIDTH: GLOBAL_CYCLE_SECONDS / 2
+
+  # ===========================================================================
+  # Workload
+  # ===========================================================================
+  INPUTS_HIST: [0, 0, 0, 3, 2, 1, 0]    # CHECK THIS
+  WEIGHTS_HIST: ([1] * 15)              # CHECK THIS
+  OUTPUTS_HIST: INPUTS_HIST             # CHECK THIS
