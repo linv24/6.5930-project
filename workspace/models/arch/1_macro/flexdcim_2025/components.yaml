@@ -17,7 +17,7 @@ compound_components:
 
   # - - - - - DPU - - - - - #
   - name: flexdcim_dpu
-    attributes: 
+    attributes:
       voltage_energy_scale: VOLTAGE_ENERGY_SCALE
       width: "must_specify"
       switching_activity: "must_specify"
@@ -55,7 +55,7 @@ compound_components:
 
   # - - - - - ADDER TREE - - - - - #
   - name: flexdcim_adder_tree
-    attributes: 
+    attributes:
       voltage_energy_scale: VOLTAGE_ENERGY_SCALE
       width: 14
       n_inputs: 512
@@ -84,7 +84,7 @@ compound_components:
   # ===========================================================================
   # CiM and SRAM Drivers (2)
   # ===========================================================================
-  
+
   # - - - - - SRAM DRIVERS - - - - - #
   - name: flexdcim_sram_drivers
     attributes:
@@ -191,38 +191,39 @@ compound_components:
       - {name: control_logic, actions: [{name: leak, energy_scale: leakage_energy_scale * 0.5}]}
     - {name: update, subcomponents: []}
 
-    # - - - - - PRE-CHARGE - - - - - #
-    - name: flexdcim_precharge
+  # - - - - - PRE-CHARGE - - - - - #
+  - name: flexdcim_precharge
+    attributes:
+      voltage_energy_scale: VOLTAGE_ENERGY_SCALE
+      leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5
+    subcomponents:
+    - name: precharge_circuit
+      class: buffer
       attributes:
-        voltage_energy_scale: VOLTAGE_ENERGY_SCALE
-        leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5
-      subcomponents:
-      - name: precharge_circuit
-        class: buffer
-        attributes:
-          n_bits: 8                                                                   # for EN<7:0> signals as described in Section IV.A
-          voltage: VOLTAGE
-        area_scale: 0.7
-      - name: wire_cap
-        class: capacitor
-        attributes:
-          capacitance: 1e-15
-          voltage: VOLTAGE
-        area_scale: 0.3
+        n_bits: 8                                                                   # for EN<7:0> signals as described in Section IV.A
+        voltage: VOLTAGE
+      area_scale: 0.7
       actions:
-      - name: read
-        subcomponents:
-        - {name: precharge_circuit, actions: [{name: read, energy_scale: voltage_energy_scale * 0.6}]}
-        - {name: wire_cap, actions: [{name: read, energy_scale: voltage_energy_scale * 0.4}]}
-      - name: write
-        subcomponents:
-        - {name: precharge_circuit, actions: [{name: write, energy_scale: voltage_energy_scale * 0.6}]}
-        - {name: wire_cap, actions: [{name: write, energy_scale: voltage_energy_scale * 0.4}]}
-      - name: leak
-        subcomponents:
-        - {name: precharge_circuit, actions: [{name: leak, energy_scale: leakage_energy_scale * 0.7}]}
-        - {name: wire_cap, actions: [{name: leak, energy_scale: leakage_energy_scale * 0.3}]}
-      - {name: update, subcomponents: []}
+    - name: wire_cap
+      class: capacitor
+      attributes:
+        capacitance: 1e-15
+        voltage: VOLTAGE
+      area_scale: 0.3
+    actions:
+    - name: read
+      subcomponents:
+      - {name: precharge_circuit, actions: [{name: read, energy_scale: voltage_energy_scale * 0.6}]}
+      - {name: wire_cap, actions: [{name: read, energy_scale: voltage_energy_scale * 0.4}]}
+    - name: write
+      subcomponents:
+      - {name: precharge_circuit, actions: [{name: write, energy_scale: voltage_energy_scale * 0.6}]}
+      - {name: wire_cap, actions: [{name: write, energy_scale: voltage_energy_scale * 0.4}]}
+    - name: leak
+      subcomponents:
+      - {name: precharge_circuit, actions: [{name: leak, energy_scale: leakage_energy_scale * 0.7}]}
+      - {name: wire_cap, actions: [{name: leak, energy_scale: leakage_energy_scale * 0.3}]}
+    - {name: update, subcomponents: []}
 
   # ===========================================================================
   # Accumulators (4)
@@ -230,7 +231,7 @@ compound_components:
 
   # - - - - - ACCUMULATOR - - - - - #
   - name: flexdcim_accumulator
-    attributes: 
+    attributes:
       voltage_energy_scale: VOLTAGE_ENERGY_SCALE
       width: OUTPUT_BITS
       leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5
