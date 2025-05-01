@@ -43,11 +43,11 @@ variables:
   # Hardware
   # ===========================================================================
 
-  TECHNOLOGY: "45nm"                                        # paper specifies a 65nm process
+  TECHNOLOGY: 65                                        # paper specifies a 65nm process
   CLOCK_FREQUENCY: 400e6                                # 400 MHz clock
   VOLTAGE: 1                                            # figure 20 mentions a 1V supply
   VOLTAGE_ENERGY_SCALE: (VOLTAGE) ** 2                  # energy consumption can be approximated as scaling quadratically with Voltage (MAY BE WORTH UPDATING FOR CALIBRATION)
-  CELL_CONFIG: "{{find_path(cell_override|default('sram_flexdcim_2025.cell.yaml'))}}"
+  CELL_CONFIG: "{{find_path('sram_flexdcim_2025.cell.yaml')}}"
   VOLTAGE_LATENCY_SCALE: 1 / VOLTAGE                    # latency scales inversely with Voltage (approx)
   BASE_LATENCY: 2.5e-9                                            # 2.5ns per cycle (400 MHz)
   GLOBAL_CYCLE_SECONDS: BASE_LATENCY * VOLTAGE_LATENCY_SCALE
@@ -59,3 +59,9 @@ variables:
   INPUTS_HIST: [0, 0, 0, 3, 2, 1, 0]    # CHECK THIS
   WEIGHTS_HIST: ([1] * 15)              # CHECK THIS
   OUTPUTS_HIST: INPUTS_HIST             # CHECK THIS
+
+  # ===========================================================================
+  # Calibration
+  # ===========================================================================
+
+  ROW_COL_DRIVERS_AREA_SCALE: 1

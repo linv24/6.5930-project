@@ -24,15 +24,15 @@ compound_components:
       power_gated: True
       leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5
     subcomponents:
-    - name: sram_array
-      class: sram_array
-      attributes:
-        n_bytes: width // 8 + (1 if width % 8 > 0 else 0)
-        n_banks: 1
-        n_rows: 8
-        n_columns: 1
-        voltage: voltage
-      area_scale: 0.53                                                                        # 52.85% area from paper
+    # - name: sram_array
+    #   class: SRAM
+    #   attributes:
+    #     n_bytes: width // 8 + (1 if width % 8 > 0 else 0)
+    #     n_banks: 1
+    #     n_rows: 8
+    #     n_columns: 1
+    #     voltage: voltage
+    #   area_scale: 0.53                                                                        # 52.85% area from paper
     - name: digital_logic
       class: intadder
       attributes:
@@ -42,14 +42,15 @@ compound_components:
     actions:
     - name: read
       subcomponents:
-      - {name: sram_array, actions: [{name: read, energy_scale: voltage_energy_scale * 0.6}]}
+      # - {name: sram_array, actions: [{name: read, energy_scale: voltage_energy_scale * 0.6}]}
       - {name: digital_logic, actions: [{name: read, energy_scale: voltage_energy_scale * 0.04 * switching_activity}]}
     - name: write
       subcomponents:
-      - {name: sram_array, actions: [{name: write, energy_scale: voltage_energy_scale * 0.8}]}
+      # - {name: sram_array, actions: [{name: write, energy_scale: voltage_energy_scale * 0.8}]}
+       []
     - name: leak
       subcomponents:
-      - {name: sram_array, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
+      # - {name: sram_array, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
       - {name: digital_logic, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
     - {name: update, subcomponents: []}
 
@@ -237,15 +238,16 @@ compound_components:
       leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5
     subcomponents:
     - name: accum
-      class: intmac
+      class: intadder
       attributes:
         n_bits: width
         voltage: VOLTAGE
       area_scale: 0.8
     - name: shift_logic
-      class: shifter
+      class: shift_add # TODO: CHECK THIS, from models/components/shift_add.yaml
       attributes:
         n_bits: width
+        shift_register_n_bits: width * 2
         voltage: VOLTAGE
       area_scale: 0.2  # For shift operation shown in Figure 14(b)
     actions:

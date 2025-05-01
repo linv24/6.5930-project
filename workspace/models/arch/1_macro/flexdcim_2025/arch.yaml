@@ -1,7 +1,7 @@
 # ===========================================================================
-# This file is organized according to the architecture outlined in figure 11 and 
+# This file is organized according to the architecture outlined in figure 11 and
 # according to the description of that architecture in section IV.c.
-# this architectural description should match up very well with the structural 
+# this architectural description should match up very well with the structural
 # description of the 8b supporting model in the paper
 # ===========================================================================
 
@@ -24,12 +24,12 @@ architecture:
     name: dpu
     <<<: [*component_defaults, *keep_weights, *no_coalesce]
     subclass: flexdcim_dpu
-    attributes: 
+    attributes:
       width: CIM_UNIT_WIDTH_CELLS * BITS_PER_CELL
       switching_activity: SWITCHING_ACTIVITY
       power_gated: USE_POWER_GATING
       voltage: VOLTAGE
-      
+
   - !ArrayContainer                                                                  # digital sub-block (SBLK) containing the 8 8x1 DPUs (which we will extend to be 32x1 by 4/28)
     name: sblk
     <<<: [*container_defaults, *spatial_must_reuse_outputs]
@@ -51,11 +51,11 @@ architecture:
     constraints: {spatial: {maximize_dims: [[Y], [M]]}}
     max_utilization: {spatial: {factors: [('M=' + str(cim_array.get_fanout()))]}}
 
-  - !Component  
+  - !Component
     name: adder_trees
     <<<: [*component_defaults, *keep_outputs, *no_coalesce]
     subclass: flexdcim_adder_tree
-    attributes: 
+    attributes:
       width: OUTPUT_BITS
       n_inputs: SBLKS_PER_BLOCK * DPUS_PER_SBLK
       power_gated: USE_POWER_GATING
@@ -69,8 +69,8 @@ architecture:
   - !Component                                                                     # weight/SRAM drivers for writing weights to array
     name: sram_drivers
     <<<: [*component_defaults, *keep_weights, *no_coalesce]
-    subclass: flexdcim_sram_drivers
-    attributes: 
+    subclass: weight_row_drivers
+    attributes:
       width: ARRAY_BITLINES
       voltage: VOLTAGE
       <<: *cim_component_attributes
@@ -78,8 +78,8 @@ architecture:
   - !Component                                                                     # input/CIM drivers for activation distribution
     name: cim_drivers
     <<<: [*component_defaults, *keep_inputs, *no_coalesce]
-    subclass: flexdcim_cim_drivers
-    attributes: 
+    subclass: input_row_drivers
+    attributes:
       width: DAC_RESOLUTION
       switching_activity: SWITCHING_ACTIVITY
       voltage: VOLTAGE
@@ -89,24 +89,33 @@ architecture:
   # Control and Pre-charge (3)
   # ===========================================================================
 
-  - !Component                                                                     # control circuits described in IV.c.
-    name: control_circuits
+  # TODO: don't these just correspond to column drivers? do we need to model
+  #       these two separately?
+
+  - !Component
+    name: control_precharge_circuits
     <<<: [*component_defaults, *keep_inputs, *no_coalesce]
-    subclass: flexdcim_control
+    subclass: column_drivers
     attributes: {<<: *cim_component_attributes}
 
-  - !Component                                                                     # pre-charging circuits (also described in IV.c.)
-    name: precharge_circuits
-    <<<: [*component_defaults, *keep_inputs, *no_coalesce]
-    subclass: flexdcim_precharge
-    attributes: 
-      voltage: VOLTAGE
-      <<: *cim_component_attributes
+  # - !Component                                                                     # control circuits described in IV.c.
+  #   name: control_circuits
+  #   <<<: [*component_defaults, *keep_inputs, *no_coalesce]
+  #   subclass: flexdcim_control
+  #   attributes: {<<: *cim_component_attributes}
 
-  # ===========================================================================
-  # Accumulators (4) [idk why section IV.c. gave this its own block]
-  # ===========================================================================  
-  
+  # - !Component                                                                     # pre-charging circuits (also described in IV.c.)
+  #   name: precharge_circuits
+  #   <<<: [*component_defaults, *keep_inputs, *no_coalesce]
+  #   subclass: flexdcim_precharge
+  #   attributes:
+  #     voltage: VOLTAGE
+  #     <<: *cim_component_attributes
+
+  # # ===========================================================================
+  # # Accumulators (4) [idk why section IV.c. gave this its own block]
+  # # ===========================================================================
+
   - !Component                                                                    # accumulators that sit below the 16 blocks (one accumulator per block, s0 we have 16 of them)
     name: accumulator
     <<<: [*component_defaults, *keep_outputs, *no_coalesce]
