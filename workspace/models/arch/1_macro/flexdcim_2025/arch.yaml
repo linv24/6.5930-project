@@ -51,7 +51,7 @@ architecture:
     spatial: {meshX: NUM_BLOCKS}
     constraints: {spatial: {maximize_dims: [[Y], [M]]}}
     max_utilization: {spatial: {factors: [('M=' + str(cim_array.get_fanout()))]}}
-    
+
 
   - !Component
     name: adder_trees
