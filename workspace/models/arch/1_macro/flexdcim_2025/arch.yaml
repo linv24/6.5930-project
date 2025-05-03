@@ -20,6 +20,27 @@ architecture:
   # Core CiM Array (1)
   # ===========================================================================
 
+  # - !ArrayContainer                                                                  # the CiM array composed of 16 horizontally placed BLKs
+  #   name: cim_array
+  #   <<<: [*container_defaults, *spatial_must_reuse_inputs]
+  #   spatial: {meshX: NUM_BLOCKS}
+  #   constraints: {spatial: {maximize_dims: [[Y], [M]]}}
+  #   max_utilization: {spatial: {factors: [('M=' + str(cim_array.get_fanout()))]}}
+
+  - !ArrayContainer                                                                  # each BLK consists of 64 SBLKs
+    name: blk
+    <<<: [*container_defaults, *spatial_must_reuse_inputs]
+    spatial: {meshX: NUM_BLOCKS}
+    constraints: {spatial: {maximize_dims: [[Y], [M]]}}
+    max_utilization: {spatial: {factors: [('M=' + str(blk.get_fanout()))]}}
+
+  - !ArrayContainer                                                                  # digital sub-block (SBLK) containing the 8 8x1 DPUs (which we will extend to be 32x1 by 4/28)
+    name: sblk
+    <<<: [*container_defaults, *spatial_must_reuse_outputs]
+    spatial: {meshY: SBLKS_PER_BLOCK}
+    constraints: {spatial: {maximize_dims: [[R, S, C]]}}
+    max_utilization: {spatial: {factors: [('C=' + str(sblk.get_fanout()))]}}
+
   - !Component                                                                       # most fundamental unit of computation in the model, 8 SRAM cells wth accompanying small digital logic cell
     name: dpu
     <<<: [*component_defaults, *keep_weights, *no_coalesce]
@@ -30,27 +51,6 @@ architecture:
       power_gated: USE_POWER_GATING
       voltage: VOLTAGE
     area_scale: MEMORY_AREA_SCALE
-
-  - !ArrayContainer                                                                  # digital sub-block (SBLK) containing the 8 8x1 DPUs (which we will extend to be 32x1 by 4/28)
-    name: sblk
-    <<<: [*container_defaults, *spatial_must_reuse_outputs]
-    spatial: {meshY: DPUS_PER_SBLK}
-    constraints: {spatial: {maximize_dims: [[R, S, C]]}}
-    max_utilization: {spatial: {factors: [('C=' + str(sblk.get_fanout()))]}}
-
-  - !ArrayContainer                                                                  # each BLK consists of 64 SBLKs
-    name: blk
-    <<<: [*container_defaults, *spatial_must_reuse_inputs]
-    spatial: {meshX: SBLKS_PER_BLOCK}
-    constraints: {spatial: {maximize_dims: [[Y], [M]]}}
-    max_utilization: {spatial: {factors: [('M=' + str(blk.get_fanout()))]}}
-
-  - !ArrayContainer                                                                  # the CiM array composed of 16 horizontally placed BLKs
-    name: cim_array
-    <<<: [*container_defaults, *spatial_must_reuse_inputs]
-    spatial: {meshX: NUM_BLOCKS}
-    constraints: {spatial: {maximize_dims: [[Y], [M]]}}
-    max_utilization: {spatial: {factors: [('M=' + str(cim_array.get_fanout()))]}}
 
 
   - !Component

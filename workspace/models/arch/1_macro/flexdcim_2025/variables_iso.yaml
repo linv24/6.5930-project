@@ -69,7 +69,7 @@ variables:
   SRAM_DRIVER_AREA_SCALE: 0.25e-4   # Reduce SRAM driver area to hit 3.60% target
   ADDER_TREE_AREA_SCALE: 6.7e-2    # Keep at 34.72% target
   MEMORY_AREA_SCALE: 1.6e3         # Keep at 52.85% target
-  CONTROL_AREA_SCALE: .25e-3 
+  CONTROL_AREA_SCALE: .25e-3
   ACCUMULATOR_AREA_SCALE: .3e-3
-  
+
   ROW_COL_DRIVERS_AREA_SCALE: 1
