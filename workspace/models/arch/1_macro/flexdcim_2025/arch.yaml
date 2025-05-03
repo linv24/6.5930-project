@@ -29,6 +29,7 @@ architecture:
       switching_activity: SWITCHING_ACTIVITY
       power_gated: USE_POWER_GATING
       voltage: VOLTAGE
+    area_scale: MEMORY_AREA_SCALE
 
   - !ArrayContainer                                                                  # digital sub-block (SBLK) containing the 8 8x1 DPUs (which we will extend to be 32x1 by 4/28)
     name: sblk
@@ -50,6 +51,7 @@ architecture:
     spatial: {meshX: NUM_BLOCKS}
     constraints: {spatial: {maximize_dims: [[Y], [M]]}}
     max_utilization: {spatial: {factors: [('M=' + str(cim_array.get_fanout()))]}}
+    
 
   - !Component
     name: adder_trees
@@ -61,6 +63,7 @@ architecture:
       power_gated: USE_POWER_GATING
       voltage: VOLTAGE
       <<: *cim_component_attributes
+    area_scale: ADDER_TREE_AREA_SCALE
 
   # ===========================================================================
   # CiM and SRAM Drivers (2)
@@ -74,6 +77,7 @@ architecture:
       width: ARRAY_BITLINES
       voltage: VOLTAGE
       <<: *cim_component_attributes
+    area_scale: SRAM_DRIVER_AREA_SCALE
 
   - !Component                                                                     # input/CIM drivers for activation distribution
     name: cim_drivers
@@ -84,6 +88,7 @@ architecture:
       switching_activity: SWITCHING_ACTIVITY
       voltage: VOLTAGE
       <<: *cim_component_attributes
+    area_scale: CIM_DRIVER_AREA_SCALE
 
   # ===========================================================================
   # Control and Pre-charge (3)
@@ -91,12 +96,14 @@ architecture:
 
   # TODO: don't these just correspond to column drivers? do we need to model
   #       these two separately?
+  # I assumed that they were differentt based off of the paper's decision to specify each individually while enumerating the parts of the system. My understanding is that the column drivers apply weight values, but that the control and precharge are part of the
 
   - !Component
     name: control_precharge_circuits
     <<<: [*component_defaults, *keep_inputs, *no_coalesce]
     subclass: column_drivers
     attributes: {<<: *cim_component_attributes}
+    area_scale: CONTROL_AREA_SCALE
 
   # - !Component                                                                     # control circuits described in IV.c.
   #   name: control_circuits
@@ -121,6 +128,7 @@ architecture:
     <<<: [*component_defaults, *keep_outputs, *no_coalesce]
     subclass: flexdcim_accumulator
     attributes: {width: OUTPUT_BITS, <<: *cim_component_attributes}
+    area_scale: ACCUMULATOR_AREA_SCALE
 
   - !Component                                                                    # CiM unit stores weights and computes MACs
     <<<: *cim_unit

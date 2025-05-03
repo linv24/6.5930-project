@@ -19,8 +19,8 @@ compound_components:
   - name: flexdcim_dpu
     attributes:
       voltage_energy_scale: VOLTAGE_ENERGY_SCALE
-      width: "must_specify"
-      switching_activity: "must_specify"
+      width: 1
+      switching_activity: 1
       power_gated: True
       leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5
     subcomponents:
