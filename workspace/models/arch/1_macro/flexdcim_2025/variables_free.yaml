@@ -1,10 +1,3 @@
-# ===========================================================================
-# STRATEGY - start with this basic strcucture and get basically any simulation working before Sunday morning, then by Sunday night we try to
-# accurately reproduce the results from the paper (which we should do via calibration of one component at a time to match the tables in the paper if they are that granular)
-# Saturday afternoon we can sort of come up with a plan for what quantitative results we will target in what order, bc we don't want to have to backtrack too many times
-# ===========================================================================
-
-
 # - - - - - THE BIGGEST RESULTS TO MAKE SURE WE HIT (FROM TABLE VI) - - - - - #
 
 # Technology - 65 nm
@@ -20,17 +13,26 @@
 # Energy Efficiency (TOPS/W) - 249.1 (1/1b), 110.7 (1/8b), 13.84 (8/8b)
 # Frequency (MHz) - 400 (1/8b), 50 (8/8b)
 
-# we should be able to recreat figure 23 plots (extend with 16b and 32b data)
+# we should be able to recreate figure 23 plots (extend with 16b and 32b data)
 # maybe fir 24 as well
 
 variables:
   version: 0.4
 
   # ===========================================================================
-  # Architecture specs
+  # Precision - Set this to change the precision of the architecture (To solve a definition ordering issue, 
+  # just set the FREE and ISO to the same value in each file and the model will work correctly
+  # ===========================================================================
+  
+  MAX_SUPPORTED_PRECISION_FREE: 8
+  MASTER_PRECISION_FREE: 8
+  
+  # ===========================================================================
+  # Power specific specs
   # ===========================================================================
 
-  SWITCHING_ACTIVITY: 1 # (AVERAGE_INPUT_VALUE * (1 - AVERAGE_INPUT_VALUE)) ** 0.5      # CHECK ON THIS       # CHANGED TO 1 FOR DEBUGGING
+  SWITCHING_ACTIVITY: 1 # (AVERAGE_INPUT_VALUE * (1 - AVERAGE_INPUT_VALUE)) ** 0.5      # CHECK ON THIS - CHANGED TO 1 FOR DEBUGGING
+  USE_POWER_GATING: True                                # power gating is specified in the paper (DOUBLE CHECK BEFORE CP3)
 
   # ===========================================================================
   # Data patterns
@@ -38,30 +40,29 @@ variables:
 
   # AVERAGE_INPUT_VALUE: 0.5                               # DEFAULT - change according to desired workload model
   # AVERAGE_WEIGHT_VALUE: 0.5                              # DEFAULT - change according to desired workload model
-  AVERAGE_OUTPUT_VALUE: 0.5                              # DEFAULT - change according to desired workload model
+  AVERAGE_OUTPUT_VALUE: 0.5                                # DEFAULT - change according to desired workload model
 
   # ===========================================================================
-  # Number of blocks and DPUs
+  # Architecture specs
   # ===========================================================================
 
   NUM_BLOCKS: 16                                        # 16 BLKs total according to paper
   SBLKS_PER_BLOCK: 64                                   # each BLK contains 64 SBLKs
-  DPUS_PER_SBLK: 8                                      # each SBLK is an array of 8x8x1 DPUs (CHANGE THIS IN DESIGN SPACE EXPLORATION)
+  DPUS_PER_SBLK: MAX_SUPPORTED_PRECISION_FREE           # for scaling area based on number of DPUs in architecture
+  ACTIVE_DPUS_PER_SBLK: MASTER_PRECISION_FREE           # for scaling energy based on selected precision
+  ADDER_TREE_WIDTH: ceil(log2(SBLKS_PER_BLOCK)) + MASTER_PRECISION_FREE
 
   # ===========================================================================
-  # Design space variables
+  # I/O variables
   # ===========================================================================
 
-   # default configuration: 8b input, 8b weight, output to accomodate multiply logic, edit these when adjusting precision?
-  INPUT_BITS: 8
-  WEIGHT_BITS: 8
-  OUTPUT_BITS: 16
+  INPUT_BITS: MASTER_PRECISION_FREE
+  WEIGHT_BITS: MASTER_PRECISION_FREE
+  OUTPUT_BITS: MASTER_PRECISION_FREE * 2
   BATCH_SIZE: 1
 
-  # WEIGHT_BITS_PER_SLICE: WEIGHT_BITS                    # for modeling (CP2), scale this from 1b-8b, and then for CP3 go 16b-32b should always match the modeled precision
-  USE_POWER_GATING: True                                # power gating is specified in the paper (DOUBLE CHECK BEFORE CP3)
-
   # ===========================================================================
-  # Data Converters (SHOULD BE FILLER VARIABLES, BC FLEXDCIM DOESN'T USE ANALOG CONVERTORS)
+  # Data Converters (FILLER VARIABLES, BC FLEXDCIM DOESN'T USE ANALOG CONVERTORS)
   # ===========================================================================
+  
   TEMPORAL_DAC_RESOLUTION: 1

@@ -3,22 +3,30 @@ variables:
   CIM_ARCHITECTURE: True
 
   # ===========================================================================
+  # Precision - Set this to change the precision of the architecture (To solve a definition ordering issue, 
+  # just set the FREE and ISO to the same value in each file and the model will work correctly
+  # ===========================================================================
+  
+  MAX_SUPPORTED_PRECISION_ISO: 8
+  MASTER_PRECISION_ISO: 8
+  
+  # ===========================================================================
   # Set by CiM Processor
   # ===========================================================================
 
-  ARRAY_WORDLINES:        512                                     # rows in the array (inputs)
-  ARRAY_BITLINES:         128                                     # columns in the array (weights)
-  ARRAY_PARALLEL_INPUTS:  64                                      # input activations (1-64 flexible)
-  ARRAY_PARALLEL_OUTPUTS: 16                                      # 16 outputs produced in parallel
-  ARRAY_PARALLEL_WEIGHTS: 65536                                   # total weight storage
+  ARRAY_WORDLINES: 512                                                  # rows in the array (inputs)
+  ARRAY_BITLINES: 128                                                   # columns in the array (weights)
+  ARRAY_PARALLEL_INPUTS: 64                                             # input activations (1-64 flexible)
+  ARRAY_PARALLEL_OUTPUTS: 16                                            # 16 outputs produced in parallel
+  ARRAY_PARALLEL_WEIGHTS: 65536 * (MAX_SUPPORTED_PRECISION_ISO/8)       # total weight storage (increases with greater weight capacity)
 
   # ===========================================================================
   # Encoding-dependent parameters
   # ===========================================================================
 
-  ENCODED_INPUT_BITS:  INPUT_BITS
-  ENCODED_WEIGHT_BITS: WEIGHT_BITS
-  ENCODED_OUTPUT_BITS: OUTPUT_BITS
+  ENCODED_INPUT_BITS:  MASTER_PRECISION_ISO
+  ENCODED_WEIGHT_BITS: MASTER_PRECISION_ISO
+  ENCODED_OUTPUT_BITS: MASTER_PRECISION_ISO * 2
   INPUT_ENCODING_FUNC: offset_encode_hist
   WEIGHT_ENCODING_FUNC: offset_encode_hist
   SIGNED_SUM_ACROSS_INPUTS: True
@@ -28,48 +36,56 @@ variables:
   # Architecture & CiM Array Structure
   # ===========================================================================
 
-  CIM_UNIT_WIDTH_CELLS:  8                                        # 8×1 DPUs with 8 bits per weight (CHANGE THIS FOR DESIGN SPACE EXPLORATION ALONG W ADDERS AND ACCUM)
+  CIM_UNIT_WIDTH_CELLS:  8                                        # 8×1 DPUs with 8 bits per weight
   CIM_UNIT_DEPTH_CELLS:  1                                        # single row
   BITS_PER_CELL:         1                                        # each cell stores 1 bit
-
-  # ===========================================================================
-  # Data Converters
-  # ===========================================================================
-
-  ADC_RESOLUTION: 1                                               # FlexDCiM requires no ADC/DAC (doesn't simulate with 0)
-  DAC_RESOLUTION: 1                                               # FlexDCiM requires no ADC/DAC (doesn't simulate with 0)
 
   # ===========================================================================
   # Hardware
   # ===========================================================================
 
-  TECHNOLOGY: 65                                        # paper specifies a 65nm process
-  CLOCK_FREQUENCY: 400e6                                # 400 MHz clock
-  VOLTAGE: 1                                            # figure 20 mentions a 1V supply
-  VOLTAGE_ENERGY_SCALE: (VOLTAGE) ** 2                  # energy consumption can be approximated as scaling quadratically with Voltage (MAY BE WORTH UPDATING FOR CALIBRATION)
+  TECHNOLOGY: 65                                                  # paper specifies a 65nm process
+  CLOCK_FREQUENCY: 400e6                                          # 400 MHz clock
+  VOLTAGE: 1                                                      # figure 20 mentions a 1V supply
+  VOLTAGE_ENERGY_SCALE: (VOLTAGE) ** 2                            # energy consumption can be approximated as scaling quadratically w/ V
   CELL_CONFIG: "{{find_path('sram_flexdcim_2025.cell.yaml')}}"
-  VOLTAGE_LATENCY_SCALE: 1 / VOLTAGE                    # latency scales inversely with Voltage (approx)
+  VOLTAGE_LATENCY_SCALE: 1 / VOLTAGE                              # latency scales inversely with Voltage (approx)
   BASE_LATENCY: 2.5e-9                                            # 2.5ns per cycle (400 MHz)
   GLOBAL_CYCLE_SECONDS: BASE_LATENCY * VOLTAGE_LATENCY_SCALE
   READ_PULSE_WIDTH: GLOBAL_CYCLE_SECONDS / 2
 
   # ===========================================================================
+  # Calibration - use for calibrating the energy and area scaling of architectural components
+  # ===========================================================================
+
+  # area scale calibration
+  CIM_DRIVER_AREA_SCALE: 0.5e-2   
+  SRAM_DRIVER_AREA_SCALE: 0.5e-2   
+  ADDER_TREE_AREA_SCALE: 6e-1      
+  MEMORY_AREA_SCALE: 3.8          
+  CONTROL_AREA_SCALE: .125e-1
+  ACCUMULATOR_AREA_SCALE: .3e-1
+  ROW_COL_DRIVERS_AREA_SCALE: 1
+
+  # energy scale calibration
+  CIM_DRIVER_ENERGY_SCALE: 0.55
+  SRAM_DRIVER_ENERGY_SCALE: 0.5   
+  ADDER_TREE_ENERGY_SCALE: 2.85    
+  MEMORY_ENERGY_SCALE: 3.8e3      
+  CONTROL_ENERGY_SCALE: 3.5e2
+  ACCUMULATOR_ENERGY_SCALE: .7
+  
+  # ===========================================================================
   # Workload
   # ===========================================================================
+  
   INPUTS_HIST: [0, 0, 0, 3, 2, 1, 0]    # CHECK THIS
   WEIGHTS_HIST: ([1] * 15)              # CHECK THIS
   OUTPUTS_HIST: INPUTS_HIST             # CHECK THIS
 
   # ===========================================================================
-  # Calibration
+  # Data Converters - Not important for this architecture 
   # ===========================================================================
 
-  # we can tune the area scales from here rather than inside arch.yaml
-  CIM_DRIVER_AREA_SCALE: 0.3e-4   # Reduce CIM driver area to hit 4.45% target
-  SRAM_DRIVER_AREA_SCALE: 0.25e-4   # Reduce SRAM driver area to hit 3.60% target
-  ADDER_TREE_AREA_SCALE: 6.7e-2    # Keep at 34.72% target
-  MEMORY_AREA_SCALE: 1.6e3         # Keep at 52.85% target
-  CONTROL_AREA_SCALE: .25e-3
-  ACCUMULATOR_AREA_SCALE: .3e-3
-
-  ROW_COL_DRIVERS_AREA_SCALE: 1
+  ADC_RESOLUTION: 1                                               # FlexDCiM requires no ADC/DAC (doesn't simulate with 0)
+  DAC_RESOLUTION: 1                                               # FlexDCiM requires no ADC/DAC (doesn't simulate with 0)

@@ -51,7 +51,7 @@ architecture:
       power_gated: USE_POWER_GATING
       voltage: VOLTAGE
     area_scale: MEMORY_AREA_SCALE
-
+    energy_scale: MEMORY_ENERGY_SCALE
 
   - !Component
     name: adder_trees
@@ -64,6 +64,7 @@ architecture:
       voltage: VOLTAGE
       <<: *cim_component_attributes
     area_scale: ADDER_TREE_AREA_SCALE
+    energy_scale: ADDER_TREE_ENERGY_SCALE
 
   # ===========================================================================
   # CiM and SRAM Drivers (2)
@@ -78,6 +79,7 @@ architecture:
       voltage: VOLTAGE
       <<: *cim_component_attributes
     area_scale: SRAM_DRIVER_AREA_SCALE
+    energy_scale: SRAM_DRIVER_ENERGY_SCALE
 
   - !Component                                                                     # input/CIM drivers for activation distribution
     name: cim_drivers
@@ -89,6 +91,7 @@ architecture:
       voltage: VOLTAGE
       <<: *cim_component_attributes
     area_scale: CIM_DRIVER_AREA_SCALE
+    energy_scale: CIM_DRIVER_ENERGY_SCALE
 
   # ===========================================================================
   # Control and Pre-charge (3)
@@ -104,6 +107,7 @@ architecture:
     subclass: column_drivers
     attributes: {<<: *cim_component_attributes}
     area_scale: CONTROL_AREA_SCALE
+    energy_scale: CONTROL_ENERGY_SCALE
 
   # - !Component                                                                     # control circuits described in IV.c.
   #   name: control_circuits
@@ -129,6 +133,7 @@ architecture:
     subclass: flexdcim_accumulator
     attributes: {width: OUTPUT_BITS, <<: *cim_component_attributes}
     area_scale: ACCUMULATOR_AREA_SCALE
+    energy_scale: ACCUMULATOR_ENERGY_SCALE
 
   - !Component                                                                    # CiM unit stores weights and computes MACs
     <<<: *cim_unit
