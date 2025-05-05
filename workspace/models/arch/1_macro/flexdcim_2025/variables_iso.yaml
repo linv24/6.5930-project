@@ -7,8 +7,8 @@ variables:
   # just set the FREE and ISO to the same value in each file and the model will work correctly
   # ===========================================================================
   
-  MAX_SUPPORTED_PRECISION_ISO: 8
-  MASTER_PRECISION_ISO: 8
+  MAX_SUPPORTED_PRECISION_ISO: 16
+  MASTER_PRECISION_ISO: 16
   
   # ===========================================================================
   # Set by CiM Processor
@@ -71,7 +71,7 @@ variables:
   CIM_DRIVER_ENERGY_SCALE: 0.55
   SRAM_DRIVER_ENERGY_SCALE: 0.5   
   ADDER_TREE_ENERGY_SCALE: 2.85    
-  MEMORY_ENERGY_SCALE: 3.8e3      
+  MEMORY_ENERGY_SCALE: 2.2e4      
   CONTROL_ENERGY_SCALE: 3.5e2
   ACCUMULATOR_ENERGY_SCALE: .7
   
