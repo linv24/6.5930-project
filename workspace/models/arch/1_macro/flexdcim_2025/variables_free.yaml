@@ -24,8 +24,8 @@ variables:
   # just set the FREE and ISO to the same value in each file and the model will work correctly
   # ===========================================================================
   
-  MAX_SUPPORTED_PRECISION_FREE: 16
-  MASTER_PRECISION_FREE: 16
+  MAX_SUPPORTED_PRECISION_FREE: 8
+  MASTER_PRECISION_FREE: 8
   
   # ===========================================================================
   # Power specific specs

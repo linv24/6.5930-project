@@ -65,7 +65,7 @@ architecture:
       <<: *cim_component_attributes
     area_scale: ADDER_TREE_AREA_SCALE
     energy_scale: ADDER_TREE_ENERGY_SCALE
-
+  
   # ===========================================================================
   # CiM and SRAM Drivers (2)
   # ===========================================================================

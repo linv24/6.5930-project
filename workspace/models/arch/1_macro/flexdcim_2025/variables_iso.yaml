@@ -7,8 +7,8 @@ variables:
   # just set the FREE and ISO to the same value in each file and the model will work correctly
   # ===========================================================================
   
-  MAX_SUPPORTED_PRECISION_ISO: 16
-  MASTER_PRECISION_ISO: 16
+  MAX_SUPPORTED_PRECISION_ISO: 8
+  MASTER_PRECISION_ISO: 8
   
   # ===========================================================================
   # Set by CiM Processor
@@ -58,22 +58,51 @@ variables:
   # Calibration - use for calibrating the energy and area scaling of architectural components
   # ===========================================================================
 
-  # area scale calibration
-  CIM_DRIVER_AREA_SCALE: 0.5e-2   
-  SRAM_DRIVER_AREA_SCALE: 0.5e-2   
-  ADDER_TREE_AREA_SCALE: 6e-1      
-  MEMORY_AREA_SCALE: 3.8          
-  CONTROL_AREA_SCALE: .125e-1
-  ACCUMULATOR_AREA_SCALE: .3e-1
-  ROW_COL_DRIVERS_AREA_SCALE: 1
+  # # area scale calibration
+  CIM_DRIVER_AREA_SCALE: 0.05    # Reduce from 1.0 to 0.05
+  SRAM_DRIVER_AREA_SCALE: 0.04    # Reduce from 1.0 to 0.04  
+  ADDER_TREE_AREA_SCALE: 0.6     # Slightly increase
+  MEMORY_AREA_SCALE: 1.1         # Slightly increase
+  CONTROL_AREA_SCALE: 0.05       # Reduce from 1.0 to 0.05
+  ACCUMULATOR_AREA_SCALE: 0.1    # Reduce to 0.1
+  ROW_COL_DRIVERS_AREA_SCALE: 0.05
+
 
   # energy scale calibration
-  CIM_DRIVER_ENERGY_SCALE: 0.55
-  SRAM_DRIVER_ENERGY_SCALE: 0.5   
-  ADDER_TREE_ENERGY_SCALE: 2.85    
-  MEMORY_ENERGY_SCALE: 2.2e4      
-  CONTROL_ENERGY_SCALE: 3.5e2
-  ACCUMULATOR_ENERGY_SCALE: .7
+  MEMORY_ENERGY_SCALE: 2.2e1  # Reduced by 1000x
+  CIM_DRIVER_ENERGY_SCALE: 5.5e-4
+  SRAM_DRIVER_ENERGY_SCALE: 5.0e-4
+  ADDER_TREE_ENERGY_SCALE: 2.85e-3
+  CONTROL_ENERGY_SCALE: 3.5e-1
+  ACCUMULATOR_ENERGY_SCALE: 7.0e-4
+  
+  # Energy scaling factors based on precision
+  ENERGY_SCALE_1BIT: 1.0
+  ENERGY_SCALE_2BIT: 1.24
+  ENERGY_SCALE_3BIT: 1.42
+  ENERGY_SCALE_4BIT: 1.62
+  ENERGY_SCALE_5BIT: 1.68
+  ENERGY_SCALE_6BIT: 1.93
+  ENERGY_SCALE_7BIT: 2.13
+  ENERGY_SCALE_8BIT: 2.25
+
+  # # energy scale calibration
+  # MEMORY_ENERGY_SCALE: 9.0e0       # Reduce by ~50% from previous value
+  # CIM_DRIVER_ENERGY_SCALE: 2.2e-3  # Increase by ~4x
+  # SRAM_DRIVER_ENERGY_SCALE: 2.0e-3 # Increase by ~4x  
+  # ADDER_TREE_ENERGY_SCALE: 1.4e-3  # Reduce by ~50%
+  # CONTROL_ENERGY_SCALE: 1.4e0      # Increase by ~4x
+  # ACCUMULATOR_ENERGY_SCALE: 3.5e-4 # Adjust by ~50%
+  
+  # # Energy scaling factors - adjust to match reference curve more closely
+  # ENERGY_SCALE_1BIT: 0.85          # Adjust to increase 1-bit efficiency (~15%)
+  # ENERGY_SCALE_2BIT: 1.05          # Adjust for better curve matching
+  # ENERGY_SCALE_3BIT: 1.25          # Adjust for better curve matching
+  # ENERGY_SCALE_4BIT: 1.45          # Adjust for better curve matching
+  # ENERGY_SCALE_5BIT: 1.60          # Adjust for better curve matching
+  # ENERGY_SCALE_6BIT: 1.80          # Adjust for better curve matching
+  # ENERGY_SCALE_7BIT: 2.00          # Adjust for better curve matching
+  # ENERGY_SCALE_8BIT: 2.20          # Adjust for better curve matching
   
   # ===========================================================================
   # Workload

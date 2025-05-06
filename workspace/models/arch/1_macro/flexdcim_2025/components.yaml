@@ -16,51 +16,103 @@ compound_components:
   # ===========================================================================
 
   # - - - - - DPU - - - - - #
+  # - name: flexdcim_dpu
+  #   attributes:
+  #     voltage_energy_scale: VOLTAGE_ENERGY_SCALE
+  #     width: 1
+  #     switching_activity: 1
+  #     power_gated: True
+  #     leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5
+  #   subcomponents:
+  #   # - name: sram_array
+  #   #   class: SRAM
+  #   #   attributes:
+  #   #     n_bytes: width // 8 + (1 if width % 8 > 0 else 0)
+  #   #     n_banks: 1
+  #   #     n_rows: 8
+  #   #     n_columns: 1
+  #   #     voltage: voltage
+  #   #   area_scale: 0.53                                                                        # 52.85% area from paper
+  #   - name: digital_logic
+  #     class: intadder
+  #     attributes:
+  #       n_bits: width
+  #       voltage: voltage
+  #     area_scale: 0.35                                                                        # adder tree 34.72% area from paper
+  #   actions:
+  #   - name: read
+  #     subcomponents:
+  #     # - {name: sram_array, actions: [{name: read, energy_scale: voltage_energy_scale * 0.6}]}
+  #     - {name: digital_logic, actions: [{name: read, energy_scale: voltage_energy_scale * 0.04 * switching_activity}]}
+  #   - name: write
+  #     subcomponents:
+  #     # - {name: sram_array, actions: [{name: write, energy_scale: voltage_energy_scale * 0.8}]}
+  #      []
+  #   - name: leak
+  #     subcomponents:
+  #     # - {name: sram_array, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
+  #     - {name: digital_logic, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
+  #   - {name: update, subcomponents: []}
+
   - name: flexdcim_dpu
     attributes:
       voltage_energy_scale: VOLTAGE_ENERGY_SCALE
       width: 1
-      switching_activity: 1
-      power_gated: True
+      switching_activity: SWITCHING_ACTIVITY
+      power_gated: USE_POWER_GATING
       leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5
     subcomponents:
-    # - name: sram_array
-    #   class: SRAM
-    #   attributes:
-    #     n_bytes: width // 8 + (1 if width % 8 > 0 else 0)
-    #     n_banks: 1
-    #     n_rows: 8
-    #     n_columns: 1
-    #     voltage: voltage
-    #   area_scale: 0.53                                                                        # 52.85% area from paper
     - name: digital_logic
       class: intadder
       attributes:
         n_bits: width
         voltage: voltage
-      area_scale: 0.35                                                                        # adder tree 34.72% area from paper
+      area_scale: 1.0
     actions:
     - name: read
       subcomponents:
-      # - {name: sram_array, actions: [{name: read, energy_scale: voltage_energy_scale * 0.6}]}
-      - {name: digital_logic, actions: [{name: read, energy_scale: voltage_energy_scale * 0.04 * switching_activity}]}
+      - {name: digital_logic, actions: [{name: read, energy_scale: voltage_energy_scale * 0.04 * switching_activity * WEIGHT_BITS}]}
     - name: write
-      subcomponents:
-      # - {name: sram_array, actions: [{name: write, energy_scale: voltage_energy_scale * 0.8}]}
-       []
+      subcomponents: []
     - name: leak
       subcomponents:
-      # - {name: sram_array, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
-      - {name: digital_logic, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
+      - {name: digital_logic, actions: [{name: leak, energy_scale: leakage_energy_scale * WEIGHT_BITS}]}
     - {name: update, subcomponents: []}
 
   # - - - - - ADDER TREE - - - - - #
+  # - name: flexdcim_adder_tree
+  #   attributes:
+  #     voltage_energy_scale: VOLTAGE_ENERGY_SCALE
+  #     width: 14
+  #     n_inputs: 512
+  #     power_gated: True
+  #     leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5 * (1.0 if not power_gated else 0.2)
+  #   subcomponents:
+  #   - name: adder
+  #     class: intadder
+  #     attributes:
+  #       n_bits: width
+  #       voltage: voltage
+  #       n_inputs: n_inputs
+  #     area_scale: 1.0
+  #   actions:
+  #   - name: read
+  #     subcomponents:
+  #     - {name: adder, actions: [{name: read, energy_scale: voltage_energy_scale * 0.7}]}
+  #   - name: write
+  #     subcomponents:
+  #     - {name: adder, actions: [{name: write, energy_scale: voltage_energy_scale * 0.7}]}
+  #   - name: leak
+  #     subcomponents:
+  #     - {name: adder, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
+  #   - {name: update, subcomponents: []}
+
   - name: flexdcim_adder_tree
     attributes:
       voltage_energy_scale: VOLTAGE_ENERGY_SCALE
       width: 14
       n_inputs: 512
-      power_gated: True
+      power_gated: USE_POWER_GATING
       leakage_energy_scale: VOLTAGE_ENERGY_SCALE ** 0.5 * (1.0 if not power_gated else 0.2)
     subcomponents:
     - name: adder
@@ -73,13 +125,13 @@ compound_components:
     actions:
     - name: read
       subcomponents:
-      - {name: adder, actions: [{name: read, energy_scale: voltage_energy_scale * 0.7}]}
+      - {name: adder, actions: [{name: read, energy_scale: voltage_energy_scale * 0.7 * WEIGHT_BITS}]}
     - name: write
       subcomponents:
-      - {name: adder, actions: [{name: write, energy_scale: voltage_energy_scale * 0.7}]}
+      - {name: adder, actions: [{name: write, energy_scale: voltage_energy_scale * 0.7 * WEIGHT_BITS}]}
     - name: leak
       subcomponents:
-      - {name: adder, actions: [{name: leak, energy_scale: leakage_energy_scale}]}
+      - {name: adder, actions: [{name: leak, energy_scale: leakage_energy_scale * WEIGHT_BITS}]}
     - {name: update, subcomponents: []}
 
   # ===========================================================================
