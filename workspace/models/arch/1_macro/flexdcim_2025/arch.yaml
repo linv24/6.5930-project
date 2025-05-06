@@ -20,12 +20,7 @@ architecture:
   # Core CiM Array (1)
   # ===========================================================================
 
-  # - !ArrayContainer                                                                  # the CiM array composed of 16 horizontally placed BLKs
-  #   name: cim_array
-  #   <<<: [*container_defaults, *spatial_must_reuse_inputs]
-  #   spatial: {meshX: NUM_BLOCKS}
-  #   constraints: {spatial: {maximize_dims: [[Y], [M]]}}
-  #   max_utilization: {spatial: {factors: [('M=' + str(cim_array.get_fanout()))]}}
+  # - !ArrayContainer                                                              
 
   - !ArrayContainer                                                                  # each BLK consists of 64 SBLKs
     name: blk
