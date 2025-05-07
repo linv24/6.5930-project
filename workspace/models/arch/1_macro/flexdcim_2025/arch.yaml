@@ -45,7 +45,7 @@ architecture:
       switching_activity: SWITCHING_ACTIVITY
       power_gated: USE_POWER_GATING
       voltage: VOLTAGE
-    area_scale: MEMORY_AREA_SCALE
+    area_scale: MEMORY_AREA_SCALE * (MASTER_PRECISION_FREE / 8.0) #MEMORY_AREA_SCALE
     energy_scale: MEMORY_ENERGY_SCALE
 
   - !Component
@@ -58,7 +58,7 @@ architecture:
       power_gated: USE_POWER_GATING
       voltage: VOLTAGE
       <<: *cim_component_attributes
-    area_scale: ADDER_TREE_AREA_SCALE
+    area_scale: ADDER_TREE_AREA_SCALE * (0.5 + 0.8 * log2(WEIGHT_BITS) / log2(8))
     energy_scale: ADDER_TREE_ENERGY_SCALE
   
   # ===========================================================================

@@ -58,31 +58,24 @@ variables:
   # Calibration - use for calibrating the energy and area scaling of architectural components
   # ===========================================================================
 
-  # area scale calibration
-  CIM_DRIVER_AREA_SCALE: 0.05    # Reduce from 1.0 to 0.05
-  SRAM_DRIVER_AREA_SCALE: 0.04    # Reduce from 1.0 to 0.04  
-  ADDER_TREE_AREA_SCALE: 0.6     # Slightly increase
-  MEMORY_AREA_SCALE: 1.1         # Slightly increase
-  CONTROL_AREA_SCALE: 0.05       # Reduce from 1.0 to 0.05
-  ACCUMULATOR_AREA_SCALE: 0.1    # Reduce to 0.1
+  # area scale calibration 
+
+  MEMORY_AREA_SCALE: 1.5
+  ADDER_TREE_AREA_SCALE: 0.45       
+  CONTROL_AREA_SCALE: 0.05    
+  ACCUMULATOR_AREA_SCALE: 0.05
+  CIM_DRIVER_AREA_SCALE: 0.1  
+  SRAM_DRIVER_AREA_SCALE: 0.08 
   ROW_COL_DRIVERS_AREA_SCALE: 0.05
 
 
   # energy scale calibration
-  MEMORY_ENERGY_SCALE: 2.2e1  # Reduced by 1000x
-  CIM_DRIVER_ENERGY_SCALE: 5.5e-4
-  SRAM_DRIVER_ENERGY_SCALE: 5.0e-4
-  ADDER_TREE_ENERGY_SCALE: 2.85e-3
-  CONTROL_ENERGY_SCALE: 3.5e-1
-  ACCUMULATOR_ENERGY_SCALE: 7.0e-4
-
-  # # Updated energy scale calibration (increased by 1000x)
-  # MEMORY_ENERGY_SCALE: 2.2e4        # 22,000 instead of 22
-  # CIM_DRIVER_ENERGY_SCALE: 5.5e-1   # 0.55 instead of 0.00055
-  # SRAM_DRIVER_ENERGY_SCALE: 5.0e-1  # 0.5 instead of 0.0005
-  # ADDER_TREE_ENERGY_SCALE: 2.85     # 2.85 instead of 0.00285
-  # CONTROL_ENERGY_SCALE: 3.5e2       # 350 instead of 0.35
-  # ACCUMULATOR_ENERGY_SCALE: 7.0e-1  # 0.7 instead of 0.0007
+  MEMORY_ENERGY_SCALE: 1.1e1 / 2
+  ADDER_TREE_ENERGY_SCALE: 1.45e-3 / 2
+  CONTROL_ENERGY_SCALE: 1.9 / 2
+  CIM_DRIVER_ENERGY_SCALE: 1.5e-3 / 2
+  SRAM_DRIVER_ENERGY_SCALE: 5.0e-4 / 2
+  ACCUMULATOR_ENERGY_SCALE: 7.0e-4 / 2
   
   # Energy scaling factors based on precision
   ENERGY_SCALE_1BIT: 1.0
