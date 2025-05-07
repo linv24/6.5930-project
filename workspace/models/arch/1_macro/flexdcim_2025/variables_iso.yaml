@@ -6,7 +6,7 @@ variables:
   # Precision - Set this to change the precision of the architecture (To solve a definition ordering issue, 
   # just set the FREE and ISO to the same value in each file and the model will work correctly
   # ===========================================================================
-  
+
   MAX_SUPPORTED_PRECISION_ISO: 8
   MASTER_PRECISION_ISO: 8
   
@@ -60,8 +60,8 @@ variables:
 
   # area scale calibration 
 
-  MEMORY_AREA_SCALE: 1.5
-  ADDER_TREE_AREA_SCALE: 0.45       
+  MEMORY_AREA_SCALE: 1.53
+  ADDER_TREE_AREA_SCALE: 0.45    
   CONTROL_AREA_SCALE: 0.05    
   ACCUMULATOR_AREA_SCALE: 0.05
   CIM_DRIVER_AREA_SCALE: 0.1  

@@ -23,7 +23,7 @@ variables:
   # Precision - Set this to change the precision of the architecture (To solve a definition ordering issue, 
   # just set the FREE and ISO to the same value in each file and the model will work correctly
   # ===========================================================================
-  
+
   MAX_SUPPORTED_PRECISION_FREE: 8
   MASTER_PRECISION_FREE: 8
   
